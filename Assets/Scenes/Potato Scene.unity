@@ -122,6 +122,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &396303332
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 396303333}
+  m_Layer: 0
+  m_Name: groundcheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &396303333
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 396303332}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -2.08, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 475195292}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &410674695
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,6 +517,7 @@ Transform:
   m_Children:
   - {fileID: 1652124016}
   - {fileID: 1271163234}
+  - {fileID: 396303333}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &475195293
@@ -528,6 +560,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   camera: {fileID: 1271163233}
   speed: 20
+  gravity: -9.81
+  maxjumpHeight: 1.5
+  groundCheckpoint: {fileID: 396303333}
+  groundCheckpointRadius: 0.4
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &475195295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1437,7 +1476,7 @@ GameObject:
   - component: {fileID: 1959959142}
   - component: {fileID: 1959959141}
   - component: {fileID: 1959959144}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
