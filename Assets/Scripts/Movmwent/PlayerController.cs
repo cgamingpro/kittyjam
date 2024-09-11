@@ -17,9 +17,11 @@ public class PlayerController : MonoBehaviour
     private bool isTouchingWall;
     private bool isGrounded;
     private bool hasJumped = false;
-   
-    private bool canWallJump = true;  
-    [SerializeField] float wallJumpCooldown = 2f;  
+    private bool hasWallJumped = false;
+    private bool isWallJumping = false; 
+
+    private bool canWallJump = true;
+    [SerializeField] float wallJumpCooldown = 2f;
     private float wallJumpTimer = 0f;
 
     public Transform wallCheck;
@@ -33,7 +35,7 @@ public class PlayerController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
     }
 
-    
+
     void Update()
     {
         isTouchingWall = Physics.CheckSphere(wallCheck.position, wallDistance, groundMask);
@@ -41,10 +43,12 @@ public class PlayerController : MonoBehaviour
 
         if (isGrounded && verticalvelocity.y < 0)
         {
-           verticalvelocity.y = -2f; // Reset the velocity when grounded
+            verticalvelocity.y = -2f; // Reset the velocity when grounded
             hasJumped = false;
             canWallJump = true;
             wallJumpTimer = 0f;
+            hasWallJumped = false;
+            isWallJumping = false;
         }
 
         if (!canWallJump)
@@ -52,53 +56,74 @@ public class PlayerController : MonoBehaviour
             wallJumpTimer += Time.deltaTime;
             if (wallJumpTimer >= wallJumpCooldown)
             {
-                canWallJump = true; // Cooldown bittiðinde tekrar wall jump yapabilir
+                canWallJump = true;
                 wallJumpTimer = 0f;
             }
         }
-
         float inputx = Input.GetAxis("Horizontal");
         float inputz = Input.GetAxis("Vertical");
 
-        
-        
-           
-        
+
+
+
+
+        if (!isWallJumping)
+        {
+            Vector3 move = camera.transform.right * inputx + camera.transform.forward * inputz;
+
+            move.y = 0;
+
+            characterController.Move(move * speed * Time.deltaTime);
+        }
             
-        Vector3 move = camera.transform.right * inputx + camera.transform.forward * inputz;
 
-        move.y = 0;
-
-        characterController.Move(move * speed * Time.deltaTime);
-        
 
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             verticalvelocity.y = Mathf.Sqrt(maxjumpHeight * -2f * gravity);
-            
+            hasJumped = true;
+
         }
 
-        if (Input.GetButtonDown("Jump") && isTouchingWall && !isGrounded && !hasJumped && canWallJump)
+        if (Input.GetButtonDown("Jump") && isTouchingWall && !isGrounded && !hasWallJumped && canWallJump)
         {
-            
+
             verticalvelocity.y = Mathf.Sqrt(maxWalljumpHeight * -2f * gravity);
 
             Vector3 wallJumpDirection = -camera.transform.forward;
             characterController.Move(wallJumpDirection * wallJumpForce * Time.deltaTime);
-            
+
+            isWallJumping = true;
+            hasWallJumped = true;
             hasJumped = true;
             canWallJump = false;
             wallJumpTimer = 0;
         }
 
-        
+
 
         verticalvelocity.y += gravity * Time.deltaTime;
 
         characterController.Move(verticalvelocity * Time.deltaTime);
+
+        if (isWallJumping)
+        {
+            
+            if (verticalvelocity.y <= 0) 
+            {
+                isWallJumping = false; 
+            }
+        }
+    }
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (!isGrounded && hit.normal.y < 0.1) 
+        {Debug.DrawRay(hit.point, hit.normal, Color.red, 2f);
+        }
+        
         
     }
-
+}
 
     
 
@@ -106,11 +131,5 @@ public class PlayerController : MonoBehaviour
 
 
 
-    private void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        if (characterController.collisionFlags == CollisionFlags.Sides)
-        {
-            Debug.DrawRay(hit.point, hit.normal, Color.red, 2f);
-        }
-    }
-}
+   
+
